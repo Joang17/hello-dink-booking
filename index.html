@@ -1,1 +1,27 @@
-
+function updateDashboard(){
+const pending=bookings.filter(b=>b.status==='pending'),confirmed=bookings.filter(b=>b.status==='confirmed'),revenue=confirmed.reduce((s,b)=>s+Number(b.amount||0),0);
+$('totalCount').textContent=bookings.length;$('pendingCount').textContent=pending.length;$('confirmedCount').textContent=confirmed.length;$('revenueCount').textContent='₱'+revenue.toLocaleString('en-PH');
+ $('bookingRows').innerHTML=bookings.length?bookings.map(b=>`<tr><td><b>${esc(b.reference)}</b><br>${esc(b.customer_name)}<br><span class="muted">${esc(b.customer_phone)}</span></td><td>${esc(b.booking_date)}<br>${esc(String(b.start_time).slice(0,5))} · ₱${Number(b.amount).toLocaleString('en-PH')}</td><td>${esc(b.gcash_reference||'Not provided')}<br>${esc(b.gcash_name||'')}</td><td><span class="tag ${esc(b.status)}">${esc(b.status)}</span></td><td class="no-print">${b.status==='pending'?`<button class="btn" onclick="setStatus('${esc(b.id||b.reference)}','confirmed')">Confirm</button> <button class="btn danger" onclick="setStatus('${esc(b.id||b.reference)}','cancelled')">Cancel</button>`:b.status==='confirmed'?`<button class="btn ghost" onclick="printReceipt('${esc(b.reference)}')">Receipt</button>`:'—'}</td></tr>`).join(''):'<tr><td colspan="5">No bookings yet.</td></tr>';
+ $('bookingRows').innerHTML=bookings.length?bookings.map(b=>`<tr><td><b>${esc(b.reference)}</b><br>${esc(b.full_name)}<br><span class="muted">${esc(b.contact_number)}</span></td><td>${esc(b.booking_date)}<br>${esc(String(b.booking_time).slice(0,5))} · ₱${Number(b.amount).toLocaleString('en-PH')}</td><td>${esc(b.gcash_reference||'Not provided')}<br>${esc(b.gcash_name||'')}</td><td><span class="tag ${esc(b.status)}">${esc(b.status)}</span></td><td class="no-print">${b.status==='pending'?`<button class="btn" onclick="setStatus('${esc(b.id||b.reference)}','confirmed')">Confirm</button> <button class="btn danger" onclick="setStatus('${esc(b.id||b.reference)}','cancelled')">Cancel</button>`:b.status==='confirmed'?`<button class="btn ghost" onclick="printReceipt('${esc(b.reference)}')">Receipt</button>`:'—'}</td></tr>`).join(''):'<tr><td colspan="5">No bookings yet.</td></tr>';
+}
+async function setStatus(id,status){
+try{
+if(demoMode){bookings=demoData();const b=bookings.find(x=>x.reference===id||x.id===id);if(b)b.status=status;localStorage.setItem('hd_bookings',JSON.stringify(bookings))}
+else {const {error}=await sb.from('bookings').update({status}).eq('id',id);if(error)throw error}
+await loadAdmin();toast('Booking updated.');
+}catch(e){toast(e.message)}
+}
+function printReceipt(ref){
+const b=bookings.find(x=>x.reference===ref);if(!b)return;
+const w=window.open('','_blank');w.document.write(`<html><head><title>Receipt ${esc(ref)}</title><style>body{font:16px Arial;padding:35px;color:#102b25}.receipt{max-width:420px;margin:auto;border:1px solid #ddd;padding:25px}h1{font-size:27px}hr{border:0;border-top:1px dashed #aaa;margin:20px 0}</style></head><body><div class="receipt"><h1>HELLO, DINK!</h1><p>PICKLEBALL COURT BOOKING RECEIPT</p><hr><p><b>Reference:</b> ${esc(b.reference)}</p><p><b>Customer:</b> ${esc(b.customer_name)}</p><p><b>Mobile:</b> ${esc(b.customer_phone)}</p><p><b>Date:</b> ${esc(b.booking_date)}</p><p><b>Time:</b> ${esc(String(b.start_time).slice(0,5))} – ${esc(String(b.end_time||'').slice(0,5))}</p><p><b>Amount:</b> ₱${Number(b.amount).toLocaleString('en-PH')}</p><p><b>Status:</b> ${esc(b.status).toUpperCase()}</p><hr><p>Thank you for playing at HELLO, DINK!</p></div><script>window.print()<\/script></body></html>`);w.document.close();
+}
+function exportCSV(){
+const rows=[['Reference','Customer','Mobile','Date','Time','Amount','GCash Ref','Status'],...bookings.map(b=>[b.reference,b.customer_name,b.customer_phone,b.booking_date,b.start_time,b.amount,b.gcash_reference,b.status])];
+const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hello-dink-bookings.csv';a.click();URL.revokeObjectURL(a.href);
+}
+function savePaymentDetails(){localStorage.setItem('hd_gcash_number',$('gcashNumber').value);localStorage.setItem('hd_gcash_account',$('gcashAccount').value);toast('Saved in this browser only. Update live site configuration before launch.')}
+async function adminLogout(){if(sb&&!demoMode)await sb.auth.signOut();adminUser=null;demoMode=false;$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden')}
+if(sb){sb.auth.getSession().then(({data})=>{if(data.session){adminUser=data.session.user;showDashboard()}});$('connectionPill').textContent='CONNECTED'}
+renderSlots();
+</script>
+</body></html>

@@ -123,7 +123,7 @@ async function lookupBooking(){
  let b;
  if(sb){const {data,error}=await sb.rpc('lookup_booking', {p_reference:ref});if (error){toast(error.message);return}b=data?.[0]||null}
  else b=demoData().find(x=>x.reference===ref);
- $('lookupResult').innerHTML=b?`<div class="notice"><b>${esc(b.reference)}</b> · ${esc(b.booking_date)} at ${esc(String(b.start_time).slice(0,5))}<br>Status: <span class="tag ${esc(b.status)}">${esc(b.status.toUpperCase())}</span><br>Amount: ₱${Number(b.amount).toLocaleString('en-PH')}</div>`:'<span class="muted">No booking found. Check the reference code.</span>';
+ $('lookupResult').innerHTML=b?`<div class="notice"><b>${esc(b.reference)}</b> · ${esc(b.booking_date)} at ${esc(String(b.booking_time).slice(0,5))}<br>Status: <span class="tag ${esc(b.status)}">${esc(b.status.toUpperCase())}</span><br>Amount: ₱${Number(b.amount).toLocaleString('en-PH')}</div>`:'<span class="muted">No booking found. Check the reference code.</span>';
 }
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function adminLogin(){

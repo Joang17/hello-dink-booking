@@ -121,7 +121,7 @@ async function createBooking(){
 async function lookupBooking(){
  const ref=$('lookupCode').value.trim().toUpperCase();if(!ref){toast('Enter your booking reference.');return}
  let b;
- if(sb){const {data,error}=await sb.from('booking_status_lookup').select('*').eq('reference',ref).maybeSingle();if(error){toast(error.message);return}b=data}
+ if(sb){const {data,error}=await sb.rpc('lookup_booking', {p_reference:ref});if (error){toast(error.message);return}b=data?.[0]||null}
  else b=demoData().find(x=>x.reference===ref);
  $('lookupResult').innerHTML=b?`<div class="notice"><b>${esc(b.reference)}</b> · ${esc(b.booking_date)} at ${esc(String(b.start_time).slice(0,5))}<br>Status: <span class="tag ${esc(b.status)}">${esc(b.status.toUpperCase())}</span><br>Amount: ₱${Number(b.amount).toLocaleString('en-PH')}</div>`:'<span class="muted">No booking found. Check the reference code.</span>';
 }

@@ -157,7 +157,7 @@ async function setStatus(id,status){
  }catch(e){toast(e.message)}
 }
 function printReceipt(ref){
- const b=bookings.find(x=>x.reference===ref);if (!b)return;console.log('RECEIPT DATA:',b);if(!b)return;
+ const b=bookings.find(x=>x.reference===ref);if (!b)return;console.log('RECEIPT DATA:',b);
  const w=window.open('','_blank');if(!w){toast('Please allow pop-ups to print the receipt.');return}w.document.write(`<html><head><title>Receipt${esc(ref)}</title><style>body{font:16px Arial;padding:35px;color:#102b25}.receipt{max-width:420px;margin:auto;border:1px solid #ddd;padding:25px}h1{font-size:27px}hr{border:0;border-top:1px dashed #aaa;margin:20px 0}</style></head><body><div class="receipt"><h1>HELLO, DINK!</h1><p>PICKLEBALL COURT BOOKING RECEIPT</p><hr><p><b>Reference:</b> ${esc(b.reference)}</p><p><b>Customer:</b> ${esc(b.full_name)}</p><p><b>Mobile:</b> ${esc(b.contact_phone)}</p><p><b>Date:</b> ${esc(b.booking_time||'').slice(0,5)}</p><p><b>Amount:</b> ₱${Number(b.amount).toLocaleString('en-PH')}</p><p><b>Status:</b>${esc(b.status).toUpperCase()}</p><hr><p>Thank you for playing at HELLO, DINK!</p></div><script>window.print()<\/script></body></html>');w.document.close();}
 function savePaymentDetails(){localStorage.setItem('hd_gcash_number',$('gcashNumber').value);localStorage.setItem('hd_gcash_account',$('gcashAccount').value);toast('Saved in this browser only. Update live site configuration before launch.')}
 async function adminLogout(){if(sb&&!demoMode)await sb.auth.signOut();adminUser=null;demoMode=false;$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden')}

@@ -140,7 +140,7 @@ async function showDashboard(){
 async function loadAdmin(){
  try{
  if(demoMode)bookings=demoData();
- else {const {data,error}=await sb.from('bookings').select('*').order('booking_date',{ascending:false}).order('start_time',{ascending:true});if(error)throw error;bookings=data||[]}
+ else {const {data,error}=await sb.from('bookings').select('*').order('booking_date',{ascending:false}).order('booking_time',{ascending:true});if(error)throw error;bookings=data||[]}
  updateDashboard();
  }catch(e){toast('Could not load bookings: '+e.message)}
 }

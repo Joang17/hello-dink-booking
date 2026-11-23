@@ -1,23 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HELLO, DINK! — Pickleball Court Booking</title>
+<meta name="theme-color" content="#102b25">
+<style>
+:root{--ink:#102b25;--green:#c9f36a;--cream:#f7f7f0;--muted:#6b7771;--line:#e2e8e2;--white:#fff;--orange:#ff986b}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;border:0}.top{background:var(--ink);color:white;padding:18px max(22px,calc((100% - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:5}
+.logo{font-weight:950;letter-spacing:-1.5px;font-size:23px}.logo span{color:var(--green)}.nav{display:flex;gap:9px}.nav button{background:transparent;color:white;padding:10px 14px;border-radius:30px;font-weight:700}.nav button.active,.nav button:hover{background:var(--green);color:var(--ink)}
+main{max-width:1160px;margin:auto;padding:32px 22px 70px}.hero{background:var(--ink);color:white;border-radius:26px;padding:42px;display:grid;grid-template-columns:1.3fr .7fr;gap:25px;overflow:hidden;position:relative}
+.eyebrow{color:var(--green);font-size:12px;font-weight:900;letter-spacing:2px}.hero h1{font-size:clamp(40px,7vw,72px);line-height:.98;letter-spacing:-4px;margin:16px 0}.hero p{color:#d1ddd6;max-width:500px;line-height:1.65}.hero-art{display:flex;align-items:center;justify-content:center;font-size:clamp(100px,18vw,190px);transform:rotate(-12deg);filter:drop-shadow(0 15px 10px #0005)}
+.pill{display:inline-block;background:var(--green);color:var(--ink);border-radius:99px;padding:8px 13px;font-weight:900;font-size:12px}.section{margin-top:30px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:16px}.section h2{font-size:27px;letter-spacing:-1px;margin:0}.muted{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}.panel{background:white;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 5px 20px #102b2508}
+label{display:block;font-size:12px;font-weight:850;margin:14px 0 7px;color:#41534a}input,select{width:100%;padding:13px 14px;border:1px solid #dce5dd;border-radius:11px;background:#fbfcf9;color:var(--ink);outline:none}input:focus,select:focus{border-color:#779e38;box-shadow:0 0 0 3px #c9f36a55}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn{padding:13px 18px;border-radius:12px;background:var(--green);color:var(--ink);font-weight:900}.btn.dark{background:var(--ink);color:white}.btn.ghost{background:#edf2eb}.btn.danger{background:#ffe4dc;color:#8b2d18}.btn:disabled{opacity:.5;cursor:not-allowed}.full{width:100%;margin-top:17px}
+.price{font-size:35px;font-weight:950;letter-spacing:-1.5px}.feature{display:flex;gap:10px;margin:15px 0;color:#46564e;font-size:14px}.feature b{color:var(--ink)}
+.notice{padding:13px 15px;background:#f0f6e6;border:1px solid #dceac6;border-radius:12px;font-size:13px;line-height:1.5;margin-top:14px}
+.hidden{display:none!important}.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.slot{border:1px solid var(--line);background:#fbfcf9;border-radius:9px;padding:10px 4px;font-size:12px;font-weight:800}.slot.selected{background:var(--ink);color:white;border-color:var(--ink)}.slot:disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#f4f7f1;border-radius:14px;padding:16px}.stat small{color:var(--muted);font-weight:700}.stat strong{display:block;font-size:25px;margin-top:7px;letter-spacing:-1px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px}th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}.tag{display:inline-block;padding:5px 9px;border-radius:30px;background:#edf2eb;font-size:11px;font-weight:850}.tag.pending{background:#fff0d8;color:#8a5600}.tag.confirmed{background:#e6f5dc;color:#35621d}.tag.cancelled{background:#ffe5df;color:#963a24}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:35px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:13px 18px;border-radius:12px;z-index:10;box-shadow:0 8px 30px #0003;max-width:90%;font-size:14px}
+@media(max-width:760px){.hero{grid-template-columns:1fr;padding:28px}.hero-art{display:none}.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.slots{grid-template-columns:repeat(3,1fr)}.top{padding:14px 16px}.logo{font-size:19px}.nav button{padding:9px;font-size:12px}main{padding:20px 14px 50px}.row{grid-template-columns:1fr}}
+@media print{.top,.hero,.section-head,.no-print,.footer{display:none!important}body{background:white}.panel{box-shadow:none;border:0}.print-area{display:block!important}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="logo">HELLO, <span>DINK!</span></div>
+ <nav class="nav"><button id="customerTab" class="active" onclick="showView('customer')">Book a court</button><button id="adminTab" onclick="showView('admin')">Admin</button></nav>
+</header>
+<main>
+<section id="customerView">
+ <div class="hero"><div><span class="pill">YOUR COURT. YOUR GAME.</span><div class="eyebrow" style="margin-top:20px">PICKLEBALL COURT BOOKING</div><h1>LET'S<br>GET OUR<br>DINK ON.</h1><p>Find your time, reserve your court, and bring your best game. Easy booking, one hour at a time.</p></div><div class="hero-art">🏓</div></div>
+ <div class="section section-head"><div><h2>Reserve your court</h2><div class="muted">Choose a date and an available one-hour slot.</div></div><span class="pill">₱250 / HOUR</span></div>
+ <div class="grid">
+  <div class="panel">
+   <div class="row"><div><label for="bookDate">Booking date</label><input id="bookDate" type="date"></div><div><label for="bookTime">Selected time</label><input id="bookTime" readonly placeholder="Choose a slot below"></div></div>
+   <label>Available time slots · 24-hour operation</label><div id="slots" class="slots"><span class="muted">Select a date to view slots.</span></div>
+   <div class="row"><div><label for="customerName">Full name</label><input id="customerName" placeholder="Your name"></div><div><label for="customerPhone">Mobile number</label><input id="customerPhone" placeholder="09XXXXXXXXX" inputmode="tel"></div></div>
+   <label for="customerEmail">Email (optional)</label><input id="customerEmail" type="email" placeholder="you@example.com">
+   <div class="row"><div><label for="gcashRef">GCash reference number</label><input id="gcashRef" placeholder="Enter after payment"></div><div><label for="gcashName">GCash account name</label><input id="gcashName" placeholder="Name used to pay"></div></div>
+   <div class="notice"><b>GCash payment:</b> Pay ₱250 to the court's GCash number provided by the owner. Your booking will remain pending until the admin verifies payment. Do not send payment to an unverified number.</div>
+   <button class="btn full" id="bookBtn" onclick="createBooking()">Request booking · ₱250</button>
+   <div class="muted" style="margin-top:10px;font-size:12px">A booking request is not confirmed until payment is verified by the admin.</div>
+  </div>
+  <aside class="panel">
+   <div class="eyebrow">COURT RATE</div><div class="price">₱250<span style="font-size:15px;color:#718078"> / hour</span></div>
+   <div class="feature">✓ <span><b>One dedicated court</b><br>One booking per time slot</span></div>
+   <div class="feature">✓ <span><b>Simple online reservation</b><br>Choose a date and available time</span></div>
+   <div class="feature">✓ <span><b>GCash payment</b><br>Admin verifies your payment</span></div>
+   <div class="feature">✓ <span><b>Booking reference</b><br>Keep your confirmation code</span></div>
+   <div class="notice">Need help? Contact the court administrator for payment details, rescheduling, or other booking concerns.</div>
+  </aside>
+ </div>
+ <div class="section panel"><h2>Check your booking</h2><div class="muted">Enter your booking reference code to see its status.</div><div class="row"><input id="lookupCode" placeholder="e.g. HD-ABC123"><button class="btn dark" onclick="lookupBooking()">Find booking</button></div><div id="lookupResult" style="margin-top:12px"></div></div>
+</section>
+<section id="adminView" class="hidden">
+ <div class="section-head"><div><div class="eyebrow">COURT MANAGEMENT</div><h2>Admin dashboard</h2><div class="muted">Manage reservations and payment status.</div></div><span class="pill" id="connectionPill">DEMO MODE</span></div>
+ <div id="loginPanel" class="panel" style="max-width:480px;margin:25px auto"><h2>Administrator login</h2><p class="muted">Sign in with the admin email and password configured in Supabase.</p><label>Email</label><input id="adminEmail" type="email" placeholder="admin@example.com"><label>Password</label><input id="adminPassword" type="password" placeholder="Password"><button class="btn dark full" onclick="adminLogin()">Sign in</button><div class="muted" style="margin-top:12px">For local preview only, use Demo Admin below. Demo data stays in this browser and is not shared online.</div><button class="btn ghost full" onclick="demoLogin()">Open demo dashboard</button></div>
+ <div id="dashboard" class="hidden">
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:16px"><span class="muted" id="adminIdentity">Signed in</span><div style="display:flex;gap:8px"><button class="btn ghost" onclick="exportCSV()">Export CSV</button><button class="btn dark" onclick="adminLogout()">Sign out</button></div></div>
+  <div class="stats"><div class="stat"><small>Total bookings</small><strong id="totalCount">0</strong></div><div class="stat"><small>Pending</small><strong id="pendingCount">0</strong></div><div class="stat"><small>Confirmed</small><strong id="confirmedCount">0</strong></div><div class="stat"><small>Confirmed revenue</small><strong id="revenueCount">₱0</strong></div></div>
+  <div class="panel section"><div class="section-head"><div><h2>Booking records</h2><div class="muted">Review requests and verify GCash payments.</div></div><button class="btn ghost no-print" onclick="loadAdmin()">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Ref / Customer</th><th>Date & time</th><th>Payment</th><th>Status</th><th class="no-print">Actions</th></tr></thead><tbody id="bookingRows"><tr><td colspan="5">No bookings yet.</td></tr></tbody></table></div></div>
+  <div class="panel section"><h2>GCash payment details</h2><p class="muted">Add your GCash number and account name to show them to customers on the booking page.</p><div class="row"><div><label>GCash number</label><input id="gcashNumber" placeholder="09XXXXXXXXX"></div><div><label>Account name</label><input id="gcashAccount" placeholder="Account holder"></div></div><button class="btn dark no-print" onclick="savePaymentDetails()">Save payment details</button><div class="muted" style="margin-top:10px">In this starter version, payment details are saved in this browser. Configure them in your live site before accepting payments.</div></div>
+ </div>
+</section>
+<div class="footer">HELLO, DINK! · Pickleball Court Booking · ₱250 per hour</div>
+</main>
+<div id="toast" class="toast hidden"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://emtwantpvswrgrnvetxy.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Bqrfaeef874MgDrvOkoB5A_nEd02goE";
+const RATE = 250;
+let sb = null, adminUser = null, demoMode = false, selectedSlot = null, bookings = [];
+const isConfigured = !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
+if (isConfigured && window.supabase) sb = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+function toast(msg){$('toast').textContent=msg;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),3500)}
+function showView(v){$('customerView').classList.toggle('hidden',v!=='customer');$('adminView').classList.toggle('hidden',v!=='admin');$('customerTab').classList.toggle('active',v==='customer');$('adminTab').classList.toggle('active',v==='admin');}
+function dateLocal(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+$('bookDate').min=dateLocal(new Date());$('bookDate').value=dateLocal(new Date());
+$('bookDate').addEventListener('change',renderSlots);
+function demoData(){try{return JSON.parse(localStorage.getItem('hd_bookings')||'[]')}catch(e){return []}}
+function saveDemo(){localStorage.setItem('hd_bookings',JSON.stringify(bookings))}
+function timeLabel(h){return String(h).padStart(2,'0')+':00'}
+async function getAvailability(date){
+ if(sb){const {data,error}=await sb.from('public_bookings').select('booking_date,start_time,status').eq('booking_date',date);if(error)throw error;return data||[]}
+ return demoData().filter(b=>b.booking_date===date && b.status!=='cancelled');
+}
+async function renderSlots(){
+ const date=$('bookDate').value,wrap=$('slots');selectedSlot=null;$('bookTime').value='';wrap.innerHTML='';
+ if(!date)return;
+ try{
+ const used=await getAvailability(date);
+ for(let h=0;h<24;h++){const t=timeLabel(h),busy=used.some(b=>String(b.start_time).slice(0,5)===t && b.status!=='cancelled');
+ const btn=document.createElement('button');btn.className='slot';btn.textContent=t;btn.disabled=busy;
+ if(busy)btn.title='Unavailable';
+ btn.onclick=()=>{selectedSlot=t; $('bookTime').value=t;document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected')};wrap.appendChild(btn)}
+ }catch(e){wrap.textContent='Could not load availability. Check your database setup.';console.error(e)}
+}
+function makeRef(){return 'HD-'+Math.random().toString(36).slice(2,8).toUpperCase()}
+async function createBooking(){
+ const name=$('customerName').value.trim(),phone=$('customerPhone').value.trim(),date=$('bookDate').value;
+ if(!name||!phone||!date||!selectedSlot){toast('Please complete your name, mobile number, date and time slot.');return}
+ if(date<dateLocal(new Date())){toast('Please choose today or a future date.');return}
+ const payload={p_customer_name:name,p_customer_phone:phone,p_customer_email:$('customerEmail').value.trim()||null,p_booking_date:date,p_start_time:selectedSlot,p_amount:RATE,p_gcash_reference:$('gcashRef').value.trim()||null,p_gcash_name:$('gcashName').value.trim()||null};
+ $('bookBtn').disabled=true;
+ try{
+ let ref;
+ if(sb){const {data,error}=await sb.rpc('book_court_slot',payload);if(error)throw error;ref=data; }
+ else {bookings=demoData();if(bookings.some(b=>b.booking_date===date&&b.start_time===selectedSlot&&b.status!=='cancelled'))throw new Error('That slot was just booked. Please choose another time.');ref=makeRef();bookings.push({reference:ref,customer_name:name,customer_phone:phone,customer_email:payload.p_customer_email,booking_date:date,start_time:selectedSlot,amount:RATE,gcash_reference:payload.p_gcash_reference,gcash_name:payload.p_gcash_name,status:'pending',created_at:new Date().toISOString()});saveDemo()}
+ toast('Booking request received! Your reference: '+ref);
+ $('lookupCode').value=ref;$('customerName').value='';$('customerPhone').value='';$('customerEmail').value='';$('gcashRef').value='';$('gcashName').value='';
+ await renderSlots();lookupBooking();
+ }catch(e){toast(e.message||'Unable to create booking.');}
+ finally{$('bookBtn').disabled=false}
+}
+async function lookupBooking(){
+ const ref=$('lookupCode').value.trim().toUpperCase();if(!ref){toast('Enter your booking reference.');return}
+ let b;
+ if(sb){const {data,error}=await sb.rpc('lookup_booking', {p_reference:ref});if (error){toast(error.message);return}b=data?.[0]||null}
+ else b=demoData().find(x=>x.reference===ref);
+ $('lookupResult').innerHTML=b?`<div class="notice"><b>${esc(b.reference)}</b> · ${esc(b.booking_date)} at ${esc(String(b.booking_time).slice(0,5))}<br>Status: <span class="tag ${esc(b.status)}">${esc(b.status.toUpperCase())}</span><br>Amount: ₱${Number(b.amount).toLocaleString('en-PH')}</div>`:'<span class="muted">No booking found. Check the reference code.</span>';
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function adminLogin(){
+ if(!sb){toast('Configure Supabase first, or use Demo Admin for a local preview.');return}
+ const {data,error}=await sb.auth.signInWithPassword({email:$('adminEmail').value,password:$('adminPassword').value});
+ if(error){toast(error.message);return}adminUser=data.user;demoMode=false;await showDashboard();
+}
+function demoLogin(){demoMode=true;adminUser={email:'Demo Admin (local browser)'};showDashboard()}
+async function showDashboard(){
+ $('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('adminIdentity').textContent=adminUser.email;
+ $('connectionPill').textContent=demoMode?'LOCAL DEMO':'CONNECTED';
+ await loadAdmin();
+}
+async function loadAdmin(){
+ try{
+ if(demoMode)bookings=demoData();
+ else {const {data,error}=await sb.from('bookings').select('*').order('booking_date',{ascending:false}).order('booking_time',{ascending:true});if(error)throw error;bookings=data||[]}
+ updateDashboard();
+ }catch(e){toast('Could not load bookings: '+e.message)}
+}
 function updateDashboard(){
-const pending=bookings.filter(b=>b.status==='pending'),confirmed=bookings.filter(b=>b.status==='confirmed'),revenue=confirmed.reduce((s,b)=>s+Number(b.amount||0),0);
-$('totalCount').textContent=bookings.length;$('pendingCount').textContent=pending.length;$('confirmedCount').textContent=confirmed.length;$('revenueCount').textContent='₱'+revenue.toLocaleString('en-PH');
- $('bookingRows').innerHTML=bookings.length?bookings.map(b=>`<tr><td><b>${esc(b.reference)}</b><br>${esc(b.customer_name)}<br><span class="muted">${esc(b.customer_phone)}</span></td><td>${esc(b.booking_date)}<br>${esc(String(b.start_time).slice(0,5))} · ₱${Number(b.amount).toLocaleString('en-PH')}</td><td>${esc(b.gcash_reference||'Not provided')}<br>${esc(b.gcash_name||'')}</td><td><span class="tag ${esc(b.status)}">${esc(b.status)}</span></td><td class="no-print">${b.status==='pending'?`<button class="btn" onclick="setStatus('${esc(b.id||b.reference)}','confirmed')">Confirm</button> <button class="btn danger" onclick="setStatus('${esc(b.id||b.reference)}','cancelled')">Cancel</button>`:b.status==='confirmed'?`<button class="btn ghost" onclick="printReceipt('${esc(b.reference)}')">Receipt</button>`:'—'}</td></tr>`).join(''):'<tr><td colspan="5">No bookings yet.</td></tr>';
+ const pending=bookings.filter(b=>b.status==='pending'),confirmed=bookings.filter(b=>b.status==='confirmed'),revenue=confirmed.reduce((s,b)=>s+Number(b.amount||0),0);
+ $('totalCount').textContent=bookings.length;$('pendingCount').textContent=pending.length;$('confirmedCount').textContent=confirmed.length;$('revenueCount').textContent='₱'+revenue.toLocaleString('en-PH');
  $('bookingRows').innerHTML=bookings.length?bookings.map(b=>`<tr><td><b>${esc(b.reference)}</b><br>${esc(b.full_name)}<br><span class="muted">${esc(b.contact_number)}</span></td><td>${esc(b.booking_date)}<br>${esc(String(b.booking_time).slice(0,5))} · ₱${Number(b.amount).toLocaleString('en-PH')}</td><td>${esc(b.gcash_reference||'Not provided')}<br>${esc(b.gcash_name||'')}</td><td><span class="tag ${esc(b.status)}">${esc(b.status)}</span></td><td class="no-print">${b.status==='pending'?`<button class="btn" onclick="setStatus('${esc(b.id||b.reference)}','confirmed')">Confirm</button> <button class="btn danger" onclick="setStatus('${esc(b.id||b.reference)}','cancelled')">Cancel</button>`:b.status==='confirmed'?`<button class="btn ghost" onclick="printReceipt('${esc(b.reference)}')">Receipt</button>`:'—'}</td></tr>`).join(''):'<tr><td colspan="5">No bookings yet.</td></tr>';
 }
 async function setStatus(id,status){
-try{
-if(demoMode){bookings=demoData();const b=bookings.find(x=>x.reference===id||x.id===id);if(b)b.status=status;localStorage.setItem('hd_bookings',JSON.stringify(bookings))}
-else {const {error}=await sb.from('bookings').update({status}).eq('id',id);if(error)throw error}
-await loadAdmin();toast('Booking updated.');
-}catch(e){toast(e.message)}
+ try{
+ if(demoMode){bookings=demoData();const b=bookings.find(x=>x.reference===id||x.id===id);if(b)b.status=status;localStorage.setItem('hd_bookings',JSON.stringify(bookings))}
+ else {const {error}=await sb.from('bookings').update({status}).eq('id',id);if(error)throw error}
+ await loadAdmin();toast('Booking updated.');
+ }catch(e){toast(e.message)}
 }
 function printReceipt(ref){
-const b=bookings.find(x=>x.reference===ref);if(!b)return;
-const w=window.open('','_blank');w.document.write(`<html><head><title>Receipt ${esc(ref)}</title><style>body{font:16px Arial;padding:35px;color:#102b25}.receipt{max-width:420px;margin:auto;border:1px solid #ddd;padding:25px}h1{font-size:27px}hr{border:0;border-top:1px dashed #aaa;margin:20px 0}</style></head><body><div class="receipt"><h1>HELLO, DINK!</h1><p>PICKLEBALL COURT BOOKING RECEIPT</p><hr><p><b>Reference:</b> ${esc(b.reference)}</p><p><b>Customer:</b> ${esc(b.customer_name)}</p><p><b>Mobile:</b> ${esc(b.customer_phone)}</p><p><b>Date:</b> ${esc(b.booking_date)}</p><p><b>Time:</b> ${esc(String(b.start_time).slice(0,5))} – ${esc(String(b.end_time||'').slice(0,5))}</p><p><b>Amount:</b> ₱${Number(b.amount).toLocaleString('en-PH')}</p><p><b>Status:</b> ${esc(b.status).toUpperCase()}</p><hr><p>Thank you for playing at HELLO, DINK!</p></div><script>window.print()<\/script></body></html>`);w.document.close();
+ const b=bookings.find(x=>x.reference===ref);if(!b)return;
+ const w=window.open('','_blank');w.document.write(`<html><head><title>Receipt ${esc(ref)}</title><style>body{font:16px Arial;padding:35px;color:#102b25}.receipt{max-width:420px;margin:auto;border:1px solid #ddd;padding:25px}h1{font-size:27px}hr{border:0;border-top:1px dashed #aaa;margin:20px 0}</style></head><body><div class="receipt"><h1>HELLO, DINK!</h1><p>PICKLEBALL COURT BOOKING RECEIPT</p><hr><p><b>Reference:</b> ${esc(b.reference)}</p><p><b>Customer:</b> ${esc(b.customer_name)}</p><p><b>Mobile:</b> ${esc(b.customer_phone)}</p><p><b>Date:</b> ${esc(b.booking_date)}</p><p><b>Time:</b> ${esc(String(b.start_time).slice(0,5))} – ${esc(String(b.end_time||'').slice(0,5))}</p><p><b>Amount:</b> ₱${Number(b.amount).toLocaleString('en-PH')}</p><p><b>Status:</b> ${esc(b.status).toUpperCase()}</p><hr><p>Thank you for playing at HELLO, DINK!</p></div><script>window.print()<\/script></body></html>`);w.document.close();
 }
 function exportCSV(){
-const rows=[['Reference','Customer','Mobile','Date','Time','Amount','GCash Ref','Status'],...bookings.map(b=>[b.reference,b.customer_name,b.customer_phone,b.booking_date,b.start_time,b.amount,b.gcash_reference,b.status])];
-const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hello-dink-bookings.csv';a.click();URL.revokeObjectURL(a.href);
+ const rows=[['Reference','Customer','Mobile','Date','Time','Amount','GCash Ref','Status'],...bookings.map(b=>[b.reference,b.customer_name,b.customer_phone,b.booking_date,b.start_time,b.amount,b.gcash_reference,b.status])];
+ const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hello-dink-bookings.csv';a.click();URL.revokeObjectURL(a.href);
 }
 function savePaymentDetails(){localStorage.setItem('hd_gcash_number',$('gcashNumber').value);localStorage.setItem('hd_gcash_account',$('gcashAccount').value);toast('Saved in this browser only. Update live site configuration before launch.')}
 async function adminLogout(){if(sb&&!demoMode)await sb.auth.signOut();adminUser=null;demoMode=false;$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden')}

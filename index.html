@@ -91,15 +91,15 @@ async function getAvailability(date){
  return demoData().filter(b=>b.booking_date===date && b.status!=='cancelled');
 }
 async function renderSlots(){
- const date=$('bookDate').value,wrap=$('slots');selectedSlot=null;$('bookTime').value='';wrap.innerHTML='';
- if(!date)return;
- try{
- const used=await getAvailability(date);
- for(let h=0;h<24;h++){const t=timeLabel(h),busy=used.some(b=>String(b.start_time).slice(0,5)===t && b.status!=='cancelled');
- const btn=document.createElement('button');btn.className='slot';btn.textContent=t;btn.disabled=busy;
- if(busy)btn.title='Unavailable';
- btn.onclick=()=>{selectedSlot=t; $('bookTime').value=t;document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected')};wrap.appendChild(btn)}
- }catch(e){wrap.textContent='Could not load availability. Check your database setup.';console.error(e)}
+ const date=$('bookDate').value;const wrap=$('slots');selectedSlot=null;$('bookTime').value='';$('bookEndTime').value='';wrap.innerHTML='';if(!date)return;try{const used=await getAvailability(date);for(let h=0;h<24;h++){const t=timeLabel(h);const duration=Math.max(1,Number($('bookingDuration').value)||1);const startMinutes=h*60;
+ const endMinutes=startMinutes+(duration*60);const busy=used.some(b=>{if(b.status==='cancelled')return false;
+const [sh,sm]=String(b.start_time).slice(0,5).split(':').map(Number);
+ const existingStart=sh*60+sm;let existingEnd;if(b.end_time){const [eh,em]=String(b.end_time).slice(0,5).split(':').map(Number);existingEnd=eh*60+em;if(existingEnd<=existingStart)existingEnd+=1440;}else{existingEnd=existingStart+60;}return startMinutes<existingEnd && endMinutes>existingStart;});const btn=document.createElement('button');btn.className='slot';btn.textContent=t;btn.disabled=busy;if(busy)btn.title='Unavailable';btn.onclick=()=>{selectedSlot=t;$('bookTime').value=t;if($('bookingDuration').value){
+const endHour=(h+Number($('bookingDuration').value))%24;$('bookEndTime').value=timeLabel(endHour);}else{$('bookEndTime').value='';}document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected');};wrap.appendChild(btn);}
+ }catch(e){
+   wrap.textContent='Could not load availability. Check your database setup.';
+   console.error(e);
+ }
 }
 function makeRef(){return 'HD-'+Math.random().toString(36).slice(2,8).toUpperCase()}
 async function createBooking(){

@@ -156,7 +156,10 @@ async function setStatus(id,status){
  await loadAdmin();toast('Booking updated.');
  }catch(e){toast(e.message)}
 }
-
+function printReceipt(red){
+ const b=bookings.find(x=>x.reference=== ref)); if (!b) return; const w=window.open('','_blank');if (!w) {toast('Please allow pop ups to printthe receipt.');return;
+ const bookingTime=String(b.booking_time||'').slice(0,5);w.document.write('<html><head><title>Receipt${esc(b.reference)}</title><style>body{font:16pc Arial;padding: 35px;color: #102b25;}.receipt{max-width: 420px;margin: auto;border: 1px solid #ddd;padding: 25px;}h1 {font-size: 27px;}hr{border: 0;border top: 1px dashed #aaa;margin 20pz 0;}</style></head><body><div class="receipt"><h1?HELLO, DINK!</h1><p>PICKLEBALL COURT BOOKING RECEIPT</p><hr><p><b>Reference:</b>4{esc(b.reference)}</p><hr><p><b>Reference:</b>$e{esc(b.reference)}</p><p><b>Customer:</b>4{esc(b.full_name||'')}</p><p><b>Mobile:</b> ${esc(b.contact_number || '')}</p><p><b>Date:</b> ${esc(b.booking_date || '')}</p><p><b>Time:</b> ${esc(bookingTime)}</p><p><b>Amount:</b> ₱${Number(b.amount || 0).toLocaleString('en-PH')}</p><p><b>Status:</b> ${esc(b.status || '').toUpperCase()}</p><hr><p>Thank you for playing at HELLO, DINK!</p></div><script>window.print()<\/script></body></html>`);w.document.close();
+}
 function exportCSV(){
  const rows=[['Reference','Customer','Mobile','Date','Time','Amount','GCash Ref','Status'],...bookings.map(b=>[b.reference,b.customer_name,b.customer_phone,b.booking_date,b.start_time,b.amount,b.gcash_reference,b.status])];
  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hello-dink-bookings.csv';a.click();URL.revokeObjectURL(a.href);

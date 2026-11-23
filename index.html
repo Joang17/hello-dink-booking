@@ -103,21 +103,18 @@ const endHour=(h+Number($('bookingDuration').value))%24;$('bookEndTime').value=t
 }
 function makeRef(){return 'HD-'+Math.random().toString(36).slice(2,8).toUpperCase()}
 async function createBooking(){
- const name=$('customerName').value.trim(),phone=$('customerPhone').value.trim(),date=$('bookDate').value;
- if(!name||!phone||!date||!selectedSlot){toast('Please complete your name, mobile number, date and time slot.');return}
- if(date<dateLocal(new Date())){toast('Please choose today or a future date.');return}
- const payload={p_customer_name:name,p_customer_phone:phone,p_customer_email:$('customerEmail').value.trim()||null,p_booking_date:date,p_start_time:selectedSlot,p_amount:RATE,p_gcash_reference:$('gcashRef').value.trim()||null,p_gcash_name:$('gcashName').value.trim()||null};
- $('bookBtn').disabled=true;
- try{
- let ref;
- if(sb){const {data,error}=await sb.rpc('book_court_slot',payload);if(error)throw error;ref=data; }
- else {bookings=demoData();if(bookings.some(b=>b.booking_date===date&&b.start_time===selectedSlot&&b.status!=='cancelled'))throw new Error('That slot was just booked. Please choose another time.');ref=makeRef();bookings.push({reference:ref,customer_name:name,customer_phone:phone,customer_email:payload.p_customer_email,booking_date:date,start_time:selectedSlot,amount:RATE,gcash_reference:payload.p_gcash_reference,gcash_name:payload.p_gcash_name,status:'pending',created_at:new Date().toISOString()});saveDemo()}
- toast('Booking request received! Your reference: '+ref);
- $('lookupCode').value=ref;$('customerName').value='';$('customerPhone').value='';$('customerEmail').value='';$('gcashRef').value='';$('gcashName').value='';
- await renderSlots();lookupBooking();
- }catch(e){toast(e.message||'Unable to create booking.');}
- finally{$('bookBtn').disabled=false}
+const name=$('customerName').value.trim();const phone=$('customerPhone').value.trim();const date=$('bookDate').value;const duration=Number($('bookingDuration').value);if(!name||!phone||!date||!selectedSlot||!duration){toast('Please complete your name, mobile number, date, time and duration.');return;}if(!Number.isInteger(duration)||duration<1||duration>12){toast('Booking duration must be between 1 and 12 hours.');return;}if(date<dateLocal(new Date())){toast('Please choose today or a future date.');return;}
+const startHour=Number(selectedSlot.split(':')[0]);const endHour=(startHour+duration)%24;const endTime=timeLabel(endHour);$('bookEndTime').value=endTime;
+const payload={p_customer_name:name,p_customer_phone:phone,p_customer_email:$('customerEmail').value.trim()||null,p_booking_date:date,p_start_time:selectedSlot,p_end_time:endTime,p_amount:RATE,p_gcash_reference:$('gcashRef').value.trim()||null,p_gcash_name:$('gcashName').value.trim()||null};$('bookBtn').disabled=true;try{let ref;if(sb){const {data,error}=await sb.rpc('book_court_slot',payload);if(error)throw error;ref=data;}else{bookings=demoData();
+const startMinutes=startHour*60;const endMinutes=startMinutes+(duration*60);const conflict=bookings.some(b=>{if(b.booking_date!==date||b.status==='cancelled')return false;
+const [bh,bm]=String(b.start_time).slice(0,5).split(':').map(Number);                                                                                                            
+const existingStart=bh*60+bm;let existingEnd;if(b.end_time){const [eh,em]=String(b.end_time).slice(0,5).split(':').map(Number);existingEnd=eh*60+em;if(existingEnd<=existingStart)existingEnd+=1440;}else{existingEnd=existingStart+60;}
+return startMinutes<existingEnd&&endMinutes>existingStart;});if(conflict){throw new Error('That time overlaps with an existing booking. Please choose another time.');}let amount=0;for(let i=0;i<duration;i++){
+const hour=(startHour+i)%24;amount+=(hour>=16||hour<5)?250:200;}ref=makeRef(); bookings.push({reference:ref,customer_name:name,customer_phone:phone,customer_email:payload.p_customer_email,booking_date:date,start_time:selectedSlot,end_time:endTime,amount:amount,gcash_reference:payload.p_gcash_reference,gcash_name:payload.p_gcash_name,status:'pending',created_at:new Date().toISOString()});saveDemo();}
+toast('Booking request received! Your reference: '+ref);$('lookupCode').value=ref;$('customerName').value='';$('customerPhone').value='';$('customerEmail').value='';$('gcashRef').value='';$('gcashName').value='';$('bookingDuration').value='';$('bookEndTime').value='';await renderSlots();lookupBooking();
+}catch(e){toast(e.message||'Unable to create booking.');}finally{$('bookBtn').disabled=false;}
 }
+public.book
 async function lookupBooking(){
  const ref=$('lookupCode').value.trim().toUpperCase();if(!ref){toast('Enter your booking reference.');return}
  let b;

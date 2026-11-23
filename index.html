@@ -87,7 +87,7 @@ function demoData(){try{return JSON.parse(localStorage.getItem('hd_bookings')||'
 function saveDemo(){localStorage.setItem('hd_bookings',JSON.stringify(bookings))}
 function timeLabel(h){return String(h).padStart(2,'0')+':00'}
 async function getAvailability(date){
- if(sb){const {data,error}=await sb.from('public_bookings').select('booking_date,start_time,status').eq('booking_date',date);if(error)throw error;return data||[]}
+ if(sb){const {data,error}=await sb.from('public_bookings').select('booking_date,start_time,end_time,status').eq('booking_date',date);if(error)throw error;return data||[]}
  return demoData().filter(b=>b.booking_date===date && b.status!=='cancelled');
 }
 async function renderSlots(){
